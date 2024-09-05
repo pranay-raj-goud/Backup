@@ -1,3 +1,4 @@
+
 import streamlit as st
 import pandas as pd
 import numpy as np
@@ -367,7 +368,7 @@ def main():
     
     # Display the text and table
     st.markdown(css, unsafe_allow_html=True)
-    st.markdown("<p style='font-size: small;'>Please rename your column headers as per input file structure shown:</p>", unsafe_allow_html=True)
+    st.warning("""Please rename your column headers as per input file structure shown""")
     st.markdown(html_table, unsafe_allow_html=True)
     
     st.info(
@@ -653,14 +654,24 @@ def main():
         
                     if index == 0:  # Save the first PDF for preview
                         preview_pdf_path = pdf_path
-        
-                st.header("PDF Preview")
-                # Embed the first PDF in an iframe for preview
+
+                # Custom smaller header for PDF Preview
+                st.markdown(
+                    """
+                    <h3 style='text-align: left; font-size:24px; color:#4CAF50;'>PDF Preview</h3>
+                    """, 
+                    unsafe_allow_html=True
+                )
                 if preview_pdf_path:
+                    # Read the PDF file as binary
                     with open(preview_pdf_path, "rb") as pdf_file:
-                        base64_pdf = base64.b64encode(pdf_file.read()).decode('utf-8')
-                        pdf_display = f'<iframe src="data:application/pdf;base64,{base64_pdf}" width="700" height="900" type="application/pdf"></iframe>'
-                        st.markdown(pdf_display, unsafe_allow_html=True)
+                        pdf_data = pdf_file.read()
+                        base64_pdf = base64.b64encode(pdf_data).decode('utf-8')
+                        # Create a download link for the PDF
+                        pdf_link = f'<a href="data:application/pdf;base64,{base64_pdf}" download="{os.path.basename(preview_pdf_path)}">Click here to download and view PDF</a>'
+                        
+                        # Display the link in Streamlit
+                        st.markdown(pdf_link, unsafe_allow_html=True)
         
                 # Create a zip file containing all district folders
                 zip_buffer = io.BytesIO()
